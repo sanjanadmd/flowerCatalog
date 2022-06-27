@@ -1,0 +1,46 @@
+* {
+  font-family: sans-serif;
+  line-height: 1.6em;
+}
+
+body {
+  margin: 0 auto;
+  width: 960px;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.title {
+  color: #ffc800;
+  font-family: 'Times New Roman', Times, serif;
+  border-bottom: 1px solid black;
+}
+
+.page-wrapper {
+  display: flex;
+  gap: 10px
+}
+
+.freshorigins {
+  width: 80%;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menuButton {
+  background-color: 00000;
+}
+
+.ageratum,
+.abeliophyllum {
+  width: 60%;
+}
