@@ -1,14 +1,13 @@
-const { addComment, displayComments } = require("./addComment.js");
+const { guestBook } = require('./guestbook.js');
 
 const catalogueHandler = (request, response, serveFrom) => {
   const { uri, method } = request;
-  if (method !== 'get') {
+  if (method.toLowerCase() !== 'get') {
     return false;
   }
 
-  if (uri === '/guestBook') {
-    addComment(request, response, serveFrom);
-    return displayComments(response);
+  if (uri.startsWith('/guestBook')) {
+    return guestBook(request, response, serveFrom);
   }
 };
 

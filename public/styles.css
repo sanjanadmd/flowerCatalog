@@ -24,7 +24,7 @@ body {
 
 .page-wrapper {
   display: flex;
-  gap: 10px
+  gap: 15px;
 }
 
 .freshorigins {
@@ -36,11 +36,22 @@ body {
   flex-direction: column;
 }
 
-.menuButton {
-  background-color: 00000;
-}
-
 .ageratum,
 .abeliophyllum {
   width: 60%;
+  height: 500px;
+}
+
+.description {
+  margin-top: 25px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.animeFlower {
+  justify-content: right;
 }
