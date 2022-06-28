@@ -3,7 +3,7 @@ const determineContentType = {
   jpg: 'image/jpeg',
   png: 'image/png',
   html: 'text/html',
-  pdf: 'application/ pdf'
+  pdf: 'application/pdf'
 };
 
 const getExtension = (file) => {

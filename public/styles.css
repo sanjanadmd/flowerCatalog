@@ -22,10 +22,9 @@ body {
   border-bottom: 1px solid black;
 }
 
-.page-wrapper {
+.content-wrapper {
   display: flex;
   gap: 15px;
-  height: 450px;
 }
 
 .freshorigins {
@@ -60,4 +59,9 @@ table {
 .field {
   display: flex;
   gap: 10px;
+}
+
+.abeliophyllum,
+.ageratum {
+  height: 450px;
 }

@@ -7,7 +7,7 @@ const modifyHtml = (title, content) => {
 
 const guestBookPage = (comments) => {
   const addComment = fs.readFileSync('resources/addComment.html', 'utf8');
-  return modifyHtml('Guest Book', addComment + comments.toTable());
+  return modifyHtml('Guest Book', addComment + comments.toTable('reverse'));
 }
 
 const guestBook = (request, response) => {

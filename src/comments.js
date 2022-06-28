@@ -28,8 +28,12 @@ class Comments {
     this.#comments.push(...JSON.parse(fs.readFileSync(path, 'utf8')));
   }
 
-  toTable() {
-    const tableData = this.#comments.map((comment) => createRow(comment, 'td')).join('');
+  toTable(order) {
+    let comments = this.#comments;
+    if (order === 'reverse') {
+      comments = comments.reverse();
+    }
+    const tableData = comments.map((comment) => createRow(comment, 'td')).join('');
     const tableHeader = createRow(this.#headers, 'th');
     return tag('table', tableHeader + tableData);
   }
