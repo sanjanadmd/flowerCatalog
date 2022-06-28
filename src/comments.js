@@ -2,15 +2,26 @@ const fs = require("fs");
 
 const tag = (name, content) => `<${name}>${content}</${name}>`
 
+const getDateTime = () => {
+  const date = new Date();
+  return date.toLocaleString();
+};
+
+const createRow = ({ name, comment, dateTime }, type) => {
+  const data = tag(type, dateTime) + tag(type, name) + tag(type, comment);
+  return tag('tr', data);
+};
+
 class Comments {
   #comments
+  #headers
   constructor() {
     this.#comments = [];
+    this.#headers = { dateTime: 'DateTime', name: 'Name', comment: 'Comment' };
   }
 
   add(name, comment) {
-    const date = new Date();
-    this.#comments.push({ name, comment, dateTime: date.toString() });
+    this.#comments.push({ name, comment, dateTime: getDateTime() });
   }
 
   retrieve(path) {
@@ -18,12 +29,8 @@ class Comments {
   }
 
   toTable() {
-    const tableData = this.#comments.map(({ name, comment, dateTime }) => {
-      const data = tag('td', dateTime) + tag('td', name) + tag('td', comment);
-      return tag('tr', data);
-    }).join('');
-    const headers = tag('th', 'DateTime') + tag('th', 'Name') + tag('th', 'Comment');
-    const tableHeader = tag('tr', headers);
+    const tableData = this.#comments.map((comment) => createRow(comment, 'td')).join('');
+    const tableHeader = createRow(this.#headers, 'th');
     return tag('table', tableHeader + tableData);
   }
 

@@ -5,6 +5,11 @@ const modifyHtml = (title, content) => {
   return `<html><head><title>${title}</title><link rel="stylesheet" href="styles.css"></head><body>${content}</body></html>`
 };
 
+const guestBookPage = (comments) => {
+  const addComment = fs.readFileSync('resources/addComment.html', 'utf8');
+  return modifyHtml('Guest Book', addComment + comments.toTable());
+}
+
 const guestBook = (request, response) => {
   const { name, comment } = request.queryParams;
   const comments = new Comments();
@@ -15,10 +20,7 @@ const guestBook = (request, response) => {
     comments.save('resources/comments.json');
   }
 
-  const addComment = fs.readFileSync('resources/addComment.html', 'utf8');
-
-  const page = modifyHtml('Guest Book', addComment + comments.toTable());
-
+  const page = guestBookPage(comments);
   response.send(page);
   return true;
 };
