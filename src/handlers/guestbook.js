@@ -4,12 +4,11 @@ const modifyHtml = (title, content) => {
   return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"></head><body>${content}</body></html>`
 };
 
-const createEntry = (searchParams) => {
+const createEntry = (searchParams, timeStamp) => {
   const entry = {};
-  entry.DateTime = new Date().toLocaleString();
-  for ([key, value] of searchParams.entries()) {
-    entry[key] = value;
-  }
+  entry.dateTime = timeStamp;
+  entry.name = searchParams.get('name');
+  entry.comment = searchParams.get('comment');
   return entry;
 }
 
@@ -25,9 +24,9 @@ const guestBookPageHandler = (request, response) => {
 
 const addBookHandler = (request, response) => {
   const { searchParams } = request.url;
-  const entry = createEntry(searchParams);
+  const entry = createEntry(searchParams, request.timeStamp.toLocaleString());
 
-  if (entry.Name && entry.Comment) {
+  if (entry.name && entry.comment) {
     request.comments.add(entry);
     request.comments.save();
   }

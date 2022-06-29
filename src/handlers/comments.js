@@ -14,7 +14,7 @@ class Comments {
   }
 
   add(entry) {
-    this.#comments.push(entry);
+    this.#comments.unshift(entry);
   }
 
   set priorComments(records) {
@@ -25,18 +25,16 @@ class Comments {
     this.refPath = path;
   }
 
-  toTable(headers, order) {
+  toTable(columns) {
     let comments = this.#comments;
-    if (order === 'reverse') {
-      comments = comments.reverse();
-    }
-    const tableHeader = headers.reduce((row, header) => row + tag('th', header), '');
+    const tableHeader = columns.reduce((row, header) => row + tag('th', header), '');
+    const headers = ['dateTime', 'name', 'comment'];
     const tableData = comments.map((comment) => createRow(headers, comment, 'td')).join('');
     return tag('table', tableHeader + tableData);
   }
 
-  save(file) {
-    fs.writeFileSync(file || this.refPath, JSON.stringify(this.#comments), 'utf8');
+  save() {
+    fs.writeFileSync(this.refPath, JSON.stringify(this.#comments), 'utf8');
   }
 }
 
