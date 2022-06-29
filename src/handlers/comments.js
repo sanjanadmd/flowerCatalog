@@ -21,6 +21,10 @@ class Comments {
     this.#comments.push(...records);
   }
 
+  set reference(path) {
+    this.refPath = path;
+  }
+
   toTable(headers, order) {
     let comments = this.#comments;
     if (order === 'reverse') {
@@ -31,8 +35,8 @@ class Comments {
     return tag('table', tableHeader + tableData);
   }
 
-  saveTo(file) {
-    fs.writeFileSync(file, JSON.stringify(this.#comments), 'utf8');
+  save(file) {
+    fs.writeFileSync(file || this.refPath, JSON.stringify(this.#comments), 'utf8');
   }
 }
 

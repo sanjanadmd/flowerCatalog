@@ -1,0 +1,19 @@
+{
+  "name": "flower-catalog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "startServer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanjanadmd/flowerCatalog.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sanjanadmd/flowerCatalog/issues"
+  },
+  "homepage": "https://github.com/sanjanadmd/flowerCatalog#readme"
+}

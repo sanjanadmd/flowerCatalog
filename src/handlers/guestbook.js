@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { Comments } = require('./comments.js');
 
 const modifyHtml = (title, content) => {
   return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"></head><body>${content}</body></html>`
@@ -14,17 +13,13 @@ const createEntry = (searchParams) => {
   return entry;
 }
 
-const getRecords = (file) => {
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
-};
-
 const guestBookPageHandler = (request, response) => {
-  const addComment = fs.readFileSync('src/templates/addComment.html', 'utf8');
+  const form = fs.readFileSync('src/templates/addComment.html', 'utf8');
   const commentHeaders = {
     name: 'name', comment: 'Comment', dateTime: 'DateTime'
   };
 
-  const content = addComment + request.comments.toTable(commentHeaders, 'reverse');
+  const content = form + request.comments.toTable(commentHeaders, 'reverse');
   const page = modifyHtml('Guest Book', content);
 
   response.end(page);
@@ -37,7 +32,7 @@ const addBookHandler = (request, response) => {
 
   if (entry.name && entry.comment) {
     request.comments.add(entry);
-    request.comments.saveTo('resources/comments.json');
+    request.comments.save();
   }
   response.statusCode = 302;
   response.setHeader('Location', '/guestBook/comments');
@@ -46,10 +41,7 @@ const addBookHandler = (request, response) => {
 
 };
 
-const guestBookHandler = (commentsFile) => (request, response) => {
-  const comments = new Comments();
-  const records = getRecords(commentsFile);
-  comments.priorComments = records;
+const guestBookHandler = (comments) => (request, response) => {
 
   if (request.matches('GET', '/guestBook/addComment')) {
     request.comments = comments;
