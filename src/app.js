@@ -1,8 +1,8 @@
 const { createHandler } = require('./server/router.js');
-const { fileHandler } = require('./handlers/serveFileContent.js');
-const { notFound } = require('./handlers/notFound.js');
-const { guestBookHandler } = require('./handlers/guestbook.js');
+const { getHandler } = require('./handlers/getHandlers.js');
+const { methodNotAllowed } = require('./handlers/methodNotAllowed.js');
 
-const handler = createHandler(guestBookHandler, fileHandler('./public'), notFound);
+const handlers = [getHandler, methodNotAllowed];
+const handler = createHandler({ handlers });
 
 module.exports = { handler };
