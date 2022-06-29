@@ -18,7 +18,11 @@ const createComment = (file) => {
   return comments;
 };
 
-const handlers = [guestBookHandler(createComment('resources/comments.json')), fileHandler('./public'), notFound];
+const handlers = [
+  guestBookHandler(createComment('resources/comments.json')),
+  fileHandler('./public'),
+  notFound
+];
 
 const getHandler = createHandler({ handlers, matches });
 

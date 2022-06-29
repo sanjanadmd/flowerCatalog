@@ -6,7 +6,7 @@ const modifyHtml = (title, content) => {
 
 const createEntry = (searchParams) => {
   const entry = {};
-  entry.dateTime = new Date().toLocaleString();
+  entry.DateTime = new Date().toLocaleString();
   for ([key, value] of searchParams.entries()) {
     entry[key] = value;
   }
@@ -15,13 +15,10 @@ const createEntry = (searchParams) => {
 
 const guestBookPageHandler = (request, response) => {
   const form = fs.readFileSync('src/templates/addComment.html', 'utf8');
-  const commentHeaders = {
-    name: 'name', comment: 'Comment', dateTime: 'DateTime'
-  };
+  const commentHeaders = ['DateTime', 'Name', 'Comment'];
 
   const content = form + request.comments.toTable(commentHeaders, 'reverse');
   const page = modifyHtml('Guest Book', content);
-
   response.end(page);
   return true;
 };
@@ -30,7 +27,7 @@ const addBookHandler = (request, response) => {
   const { searchParams } = request.url;
   const entry = createEntry(searchParams);
 
-  if (entry.name && entry.comment) {
+  if (entry.Name && entry.Comment) {
     request.comments.add(entry);
     request.comments.save();
   }
