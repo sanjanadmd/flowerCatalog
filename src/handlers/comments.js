@@ -14,32 +14,32 @@ const createRow = ({ name, comment, dateTime }, type) => {
 
 class Comments {
   #comments
-  #headers
-  constructor() {
+  #path
+  constructor(path) {
+    this.#path = path;
     this.#comments = [];
-    this.#headers = { dateTime: 'DateTime', name: 'Name', comment: 'Comment' };
   }
 
-  add(name, comment) {
-    this.#comments.push({ name, comment, dateTime: getDateTime() });
+  add(entry) {
+    this.#comments.push(entry);
   }
 
-  retrieve(path) {
-    this.#comments.push(...JSON.parse(fs.readFileSync(path, 'utf8')));
+  retrieve(file) {
+    this.#comments.push(...JSON.parse(fs.readFileSync(file, 'utf8')));
   }
 
-  toTable(order) {
+  toTable(headers, order) {
     let comments = this.#comments;
     if (order === 'reverse') {
       comments = comments.reverse();
     }
     const tableData = comments.map((comment) => createRow(comment, 'td')).join('');
-    const tableHeader = createRow(this.#headers, 'th');
+    const tableHeader = createRow(headers, 'th');
     return tag('table', tableHeader + tableData);
   }
 
-  save(path) {
-    fs.writeFileSync(path, JSON.stringify(this.#comments), 'utf8');
+  save(file) {
+    fs.writeFileSync(file, JSON.stringify(this.#comments), 'utf8');
   }
 }
 
