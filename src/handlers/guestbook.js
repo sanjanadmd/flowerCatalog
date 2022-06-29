@@ -10,25 +10,30 @@ const createEntry = (searchParams, timeStamp) => {
   entry.name = searchParams.get('name');
   entry.comment = searchParams.get('comment');
   return entry;
-}
+};
+
+const updateGuestBook = (path, comments) => {
+  fs.writeFileSync(path, comments, 'utf8');
+};
 
 const guestBookPageHandler = (request, response) => {
   const form = fs.readFileSync('src/templates/addComment.html', 'utf8');
   const commentHeaders = ['DateTime', 'Name', 'Comment'];
 
-  const content = form + request.comments.toTable(commentHeaders, 'reverse');
+  const content = form + request.guestBook.toTable(commentHeaders, 'reverse');
   const page = modifyHtml('Guest Book', content);
   response.end(page);
   return true;
 };
 
 const addBookHandler = (request, response) => {
+  const { guestBook } = request;
   const { searchParams } = request.url;
   const entry = createEntry(searchParams, request.timeStamp.toLocaleString());
 
   if (entry.name && entry.comment) {
-    request.comments.add(entry);
-    request.comments.save();
+    guestBook.add(entry);
+    updateGuestBook(guestBook.reference, guestBook.comments);
   }
   response.statusCode = 302;
   response.setHeader('Location', '/guestBook/comments');
@@ -40,12 +45,12 @@ const addBookHandler = (request, response) => {
 const guestBookHandler = (comments) => (request, response) => {
 
   if (request.matches('GET', '/guestBook/addComment')) {
-    request.comments = comments;
+    request.guestBook = comments;
     return addBookHandler(request, response);
   }
 
   if (request.matches('GET', '/guestBook/comments')) {
-    request.comments = comments;
+    request.guestBook = comments;
     return guestBookPageHandler(request, response);
   }
 

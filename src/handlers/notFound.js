@@ -1,6 +1,6 @@
 const html = (content) => `<html><body><h1>${content}</h1></body></html>`;
 
-const notFound = (request, response) => {
+const fileNotFound = (request, response) => {
   if (request.matches('GET', request.url.pathname)) {
     response.statusCode = 404;
     response.end(html('file not found'));
@@ -9,4 +9,4 @@ const notFound = (request, response) => {
   return false;
 };
 
-module.exports = { notFound };
+module.exports = { fileNotFound };

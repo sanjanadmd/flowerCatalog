@@ -13,18 +13,16 @@ const matches = function (method, path) {
   return method === this.method && path === this.url.pathname;
 };
 
-const createComment = (file) => {
-  const comments = new Comments();
+const createGuestBook = (file) => {
+  const guestbook = new Comments(file);
   const records = JSON.parse(fs.readFileSync(file, 'utf8'));
-  comments.priorComments = records;
-  comments.reference = file;
-  return comments;
+  guestbook.priorComments = records;
+  return guestbook;
 };
 
 const initializeApp = () => {
-
   const handlers = [
-    guestBookHandler(createComment('resources/comments.json')),
+    guestBookHandler(createGuestBook('resources/comments.json')),
     fileHandler('./public'),
     notFound,
     methodNotAllowed

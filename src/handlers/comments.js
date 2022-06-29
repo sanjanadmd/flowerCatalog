@@ -9,7 +9,8 @@ const createRow = (headers, entry, type) => {
 
 class Comments {
   #comments
-  constructor() {
+  constructor(path) {
+    this.refPath = path;
     this.#comments = [];
   }
 
@@ -21,8 +22,8 @@ class Comments {
     this.#comments.push(...records);
   }
 
-  set reference(path) {
-    this.refPath = path;
+  get reference() {
+    return this.refPath;
   }
 
   toTable(columns) {
@@ -33,8 +34,8 @@ class Comments {
     return tag('table', tableHeader + tableData);
   }
 
-  save() {
-    fs.writeFileSync(this.refPath, JSON.stringify(this.#comments), 'utf8');
+  get comments() {
+    return JSON.stringify(this.#comments);
   }
 }
 
