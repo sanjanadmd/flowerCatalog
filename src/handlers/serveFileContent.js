@@ -10,7 +10,7 @@ const contentType = {
 };
 
 
-const fileHandler = (serveFrom) => (request, response) => {
+const fileHandler = (serveFrom) => (request, response, next) => {
   const { pathname } = request.url;
   const filename = pathname === '/' ? '/index.html' : pathname;
   try {
@@ -19,7 +19,7 @@ const fileHandler = (serveFrom) => (request, response) => {
     response.setHeader('Content-type', contentType[extension] || 'text/plain');
     response.end(content);
   } catch (error) {
-    return false;
+    next();
   }
   return true;
 };

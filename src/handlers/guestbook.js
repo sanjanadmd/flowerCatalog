@@ -26,10 +26,10 @@ const guestBookPageHandler = (request, response) => {
   return true;
 };
 
-const addBookHandler = (request, response) => {
+const postGuestBook = (request, response) => {
   const { guestBook } = request;
-  const { searchParams } = request.url;
-  const entry = createEntry(searchParams, request.timeStamp.toLocaleString());
+  const { bodyParams } = request;
+  const entry = createEntry(bodyParams, request.timeStamp.toLocaleString());
 
   if (entry.name && entry.comment) {
     guestBook.add(entry);
@@ -42,19 +42,29 @@ const addBookHandler = (request, response) => {
 
 };
 
-const guestBookHandler = (comments) => (request, response) => {
+const guestBook = (request, response) => {
+  response.setHeader('Content-Type', 'application/json');
+  response.end(request.guestBook.comments);
+  return true;
+};
 
-  if (request.matches('GET', '/guestBook/addComment')) {
+const guestBookHandler = (comments) => (request, response, next) => {
+
+  if (request.matches('GET', '/api/comments')) {
     request.guestBook = comments;
-    return addBookHandler(request, response);
+    return guestBook(request, response);
   }
-
   if (request.matches('GET', '/guestBook/comments')) {
     request.guestBook = comments;
     return guestBookPageHandler(request, response);
   }
 
-  return false;
+  if (request.matches('POST', '/guestBook/addComment')) {
+    request.guestBook = comments;
+    return postGuestBook(request, response);
+  }
+
+  next();
 };
 
 module.exports = { guestBookHandler };

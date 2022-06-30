@@ -2,10 +2,12 @@ const fs = require('fs');
 
 const { createHandler } = require('./server/router.js');
 
+const { bodyParser } = require('./handlers/bodyParser.js');
+
 const { methodNotAllowed } = require('./handlers/methodNotAllowed.js');
 const { guestBookHandler } = require('./handlers/guestbook.js');
 const { fileHandler } = require('./handlers/serveFileContent.js');
-const { notFound } = require('./handlers/notFound.js');
+const { notFoundHandler } = require('./handlers/notFound.js');
 
 const { Comments } = require('./handlers/comments.js');
 
@@ -22,9 +24,10 @@ const createGuestBook = (file) => {
 
 const initializeApp = () => {
   const handlers = [
+    bodyParser,
     guestBookHandler(createGuestBook('resources/comments.json')),
     fileHandler('./public'),
-    notFound,
+    notFoundHandler,
     methodNotAllowed
   ];
 
