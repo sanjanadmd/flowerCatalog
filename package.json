@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sanjanadmd/flowerCatalog/issues"
   },
-  "homepage": "https://github.com/sanjanadmd/flowerCatalog#readme"
+  "homepage": "https://github.com/sanjanadmd/flowerCatalog#readme",
+  "dependencies": {
+    "myserver": "github:sanjanadmd/myServer"
+  }
 }

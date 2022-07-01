@@ -1,5 +1,3 @@
-const fs = require("fs");
-
 const tag = (name, content) => `<${name}>${content}</${name}>`
 
 const createRow = (headers, entry, type) => {
