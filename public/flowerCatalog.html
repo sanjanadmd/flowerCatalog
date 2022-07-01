@@ -3,6 +3,13 @@
 <head>
   <title>Flower Catalog</title>
   <link rel="stylesheet" href="styles.css">
+  <script>
+    const hideContent = () => {
+      const waterJar = document.getElementById('waterJar');
+      waterJar.style.display = 'none';
+      setTimeout(() => waterJar.style.display = 'block', 1000);
+    };
+  </script>
 </head>
 
 <body>
@@ -15,7 +22,7 @@
         <li><a href="ageratum.html">Agerantum</a></li>
       </ul>
 
-      <img src="images/animatedFlower.gif" alt="animatedFlower" class="animatedFlower">
+      <img src="images/animatedFlower.gif" alt="waterJar" class="waterJar" id="waterJar" onclick="hideContent()">
       <a href="/guestBook/comments">Guest Book</a>
     </div>
   </div>
