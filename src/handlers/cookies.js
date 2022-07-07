@@ -15,31 +15,32 @@ const injectUsers = (users) => (request, response, next) => {
 }
 
 const injectCookie = (request, response, next) => {
-  const cookies = parseCookies(request.headers.cookie);
-  request.cookies = cookies;
-  const sessionId = request.cookies.sessionId;
-  if (sessionId) {
-    response.setHeader('set-cookie', `sessionId=${sessionId};Max-Age=10`);
+  if (request.headers.cookie) {
+    const cookies = parseCookies(request.headers.cookie);
+    request.cookies = cookies;
   }
   next();
 };
 
-const injectSession = (sessions) => (request, response, next) => {
-  const sessionId = request.cookies.sessionId;
-  if (sessions[sessionId]) {
-    request.session = sessions[sessionId];
-  }
-  request.sessions = sessions;
-  next();
-};
-
-const injectUserSession = (request, response, next) => {
+const createSession = (request, response, next) => {
   const username = request.bodyParams.get('username');
-  const sessionId = new Date().getTime();
-  const session = { username, time: new Date().toLocaleString(), sessionId };
-  request.session = session;
-  response.setHeader('set-cookie', `sessionId=${session.sessionId};Max-Age=10`);
-  request.sessions[session.sessionId] = session;
+  const date = new Date();
+  const sessionId = date.getTime();
+  return { username, time: date.toLocaleString(), sessionId };
+};
+
+const logoutHandler = (request, response, next) => {
+  if (request.url.pathname !== '/logout') {
+    next();
+    return;
+  }
+  const { sessionId } = request.cookies;
+  request.sessions.remove(sessionId);
+
+  response.statusCode = 302;
+  response.setHeader('set-cookie', `sessionId=${sessionId};Max-Age=0`);
+  response.setHeader('Location', '/flowerCatalog.html');
+  response.end();
 };
 
 const loginHandler = (request, response, next) => {
@@ -49,20 +50,22 @@ const loginHandler = (request, response, next) => {
   }
 
   const username = request.bodyParams.get('username');
-  if (request.users[username]) {
-    injectUserSession(request, response, next);
+  if (username) {
+    const session = createSession(request, response, next);
+    request.session = session;
+    request.sessions.add(session);
+    response.setHeader('set-cookie', `sessionId=${session.sessionId}`);
   }
-
-  response.statusCode = 302;
 
   let location = '/loginPage.html';
   if (request.session) {
-    location = '/guestBook/comments'
+    location = '/guestBook/comments';
   }
 
+  response.statusCode = 302;
   response.setHeader('Location', location);
   response.end();
 };
 
 
-module.exports = { injectUsers, injectCookie, injectSession, loginHandler };
+module.exports = { injectUsers, injectCookie, loginHandler, logoutHandler };

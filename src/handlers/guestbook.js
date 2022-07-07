@@ -6,9 +6,10 @@ const modifyHtml = (title, content) => {
 
 const createEntry = (request, timeStamp) => {
   const { bodyParams } = request;
+  const { sessionId } = request.cookies;
   const entry = {};
   entry.dateTime = timeStamp;
-  entry.name = request.session.username;
+  entry.name = request.sessions.getSession(sessionId).username;
   entry.comment = bodyParams.get('comment');
   return entry;
 };

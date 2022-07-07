@@ -2,12 +2,13 @@ const fs = require('fs');
 
 const { createHandler, bodyParser, serveStaticFile, notFoundHandler } = require('myserver');
 
-const { injectUsers, injectCookie, injectSession, loginHandler } = require('./handlers/cookies.js');
+const { injectUsers, injectCookie, injectSession, loginHandler, logoutHandler } = require('./handlers/cookies.js');
 
 const { methodNotAllowed } = require('./handlers/methodNotAllowed.js');
 const { guestBookHandler } = require('./handlers/guestbook.js');
 
 const { Comments } = require('./handlers/comments.js');
+const { Sessions } = require('./handlers/sessions.js');
 
 const matches = function (method, path) {
   return method === this.method && path === this.url.pathname;
@@ -21,26 +22,24 @@ const createGuestBook = (file) => {
 };
 
 const initializeApp = () => {
-  const sessions = {};
-
   const users = {
-    hello: { username: 'hello' },
-    abcd: { username: 'abcd' }
+    abc: { username: 'abc' },
+    def: { username: 'def' }
   };
 
   const handlers = [
     bodyParser,
     injectUsers(users),
     injectCookie,
-    injectSession(sessions),
     loginHandler,
+    logoutHandler,
     guestBookHandler(createGuestBook('resources/comments.json')),
     serveStaticFile('./public'),
     notFoundHandler,
     methodNotAllowed
   ];
-
-  return createHandler({ handlers, matches });
+  const sessions = new Sessions();
+  return createHandler({ handlers, matches, sessions });
 };
 
 const handler = initializeApp();
