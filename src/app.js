@@ -2,6 +2,8 @@ const fs = require('fs');
 
 const { createHandler, bodyParser, serveStaticFile, notFoundHandler } = require('myserver');
 
+const { injectUsers, injectCookie, injectSession, loginHandler } = require('./handlers/cookies.js');
+
 const { methodNotAllowed } = require('./handlers/methodNotAllowed.js');
 const { guestBookHandler } = require('./handlers/guestbook.js');
 
@@ -19,8 +21,19 @@ const createGuestBook = (file) => {
 };
 
 const initializeApp = () => {
+  const sessions = {};
+
+  const users = {
+    hello: { username: 'hello' },
+    abcd: { username: 'abcd' }
+  };
+
   const handlers = [
     bodyParser,
+    injectUsers(users),
+    injectCookie,
+    injectSession(sessions),
+    loginHandler,
     guestBookHandler(createGuestBook('resources/comments.json')),
     serveStaticFile('./public'),
     notFoundHandler,
