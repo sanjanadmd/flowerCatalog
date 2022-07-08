@@ -59,7 +59,7 @@ const loginHandler = (request, response, next) => {
 
   let location = '/loginPage.html';
   if (request.session) {
-    location = '/guestBook/comments';
+    location = '/comments';
   }
 
   response.statusCode = 302;

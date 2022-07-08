@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const modifyHtml = (title, content) => {
-  return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"></head><body>${content}</body></html>`
+  return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"><script src="postComment.js"></script></head><body>${content}</body></html>`
 };
 
 const createEntry = (request, timeStamp) => {
@@ -36,9 +36,7 @@ const postGuestBook = (request, response) => {
     guestBook.add(entry);
     updateGuestBook(guestBook.reference, guestBook.comments);
   }
-  response.statusCode = 302;
-  response.setHeader('Location', '/guestBook/comments');
-  response.end();
+  response.end('submitted');
   return true;
 
 };
@@ -55,16 +53,15 @@ const guestBookHandler = (comments) => (request, response, next) => {
     request.guestBook = comments;
     return guestBook(request, response);
   }
-  if (request.matches('GET', '/guestBook/comments')) {
+  if (request.matches('GET', '/comments')) {
     request.guestBook = comments;
     return guestBookPageHandler(request, response);
   }
 
-  if (request.matches('POST', '/guestBook/addComment')) {
+  if (request.matches('POST', '/comments')) {
     request.guestBook = comments;
     return postGuestBook(request, response);
   }
-
   next();
 };
 
