@@ -19,10 +19,9 @@ const updateGuestBook = (path, comments) => {
 };
 
 const guestBookPageHandler = (request, response) => {
-  const form = fs.readFileSync('src/templates/addComment.html', 'utf8');
-  const commentHeaders = ['DateTime', 'Name', 'Comment'];
+  const comments = fs.readFileSync('src/templates/addComment.html', 'utf8');
 
-  const content = form + request.guestBook.toTable(commentHeaders, 'reverse');
+  const content = comments.replaceAll('__COMMENT__', request.guestBook.toTable('reverse'));
   const page = modifyHtml('Guest Book', content);
   response.end(page);
   return true;
