@@ -14,10 +14,17 @@ const matches = function (method, path) {
   return method === this.method && path === this.url.pathname;
 };
 
+const read = (path) => {
+  return JSON.parse(fs.readFileSync(path, 'utf8'))
+};
+
+const write = (path, comments) => {
+  fs.writeFileSync(path, comments, 'utf8');
+};
+
 const initializeGuestBook = (file) => {
-  const guestbook = new Comments(file);
-  const records = JSON.parse(fs.readFileSync(file, 'utf8'));
-  guestbook.priorComments = records;
+  const guestbook = new Comments(file, read, write);
+  guestbook.initialize();
   return guestbook;
 };
 

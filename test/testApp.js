@@ -61,6 +61,7 @@ describe('Initialize App', () => {
         .expect(200)
         .expect('Content-Type', 'text/html', done);
     });
+
     it('Should respond with comments with api', (done) => {
       const config = createConfig('create-session');
       const handler = initializeApp(config);
@@ -88,7 +89,6 @@ describe('Initialize App', () => {
           done(err);
         });
     });
-
 
   });
 

@@ -8,13 +8,25 @@ const createRow = (headers, entry, type) => {
 
 class Comments {
   #comments
-  constructor(path) {
+  #read
+  #write
+  constructor(path, read, write) {
     this.refPath = path;
     this.#comments = [];
+    this.#read = read;
+    this.#write = write;
   }
 
   add(entry) {
     this.#comments.unshift(entry);
+  }
+
+  initialize() {
+    this.priorComments = this.#read(this.reference);
+  }
+
+  save() {
+    this.#write(this.reference, this.comments);
   }
 
   set priorComments(records) {
@@ -25,6 +37,10 @@ class Comments {
     return this.refPath;
   }
 
+  get comments() {
+    return JSON.stringify(this.#comments);
+  }
+
   toTable() {
     let comments = this.#comments;
     const headers = ['dateTime', 'name', 'comment'];
@@ -32,9 +48,6 @@ class Comments {
     return tableData;
   }
 
-  get comments() {
-    return JSON.stringify(this.#comments);
-  }
 }
 
 module.exports = { Comments };

@@ -14,10 +14,6 @@ const createEntry = (request, timeStamp) => {
   return entry;
 };
 
-const updateGuestBook = (path, comments) => {
-  fs.writeFileSync(path, comments, 'utf8');
-};
-
 const guestBookPageHandler = (request, response) => {
   const comments = fs.readFileSync('src/templates/addComment.html', 'utf8');
 
@@ -36,7 +32,7 @@ const postGuestBook = (request, response) => {
 
   if (entry.name && entry.comment) {
     guestBook.add(entry);
-    updateGuestBook(guestBook.reference, guestBook.comments);
+    guestBook.save();
   }
 
   response.statusCode = 201;
