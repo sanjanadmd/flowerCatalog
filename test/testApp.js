@@ -61,6 +61,16 @@ describe('Initialize App', () => {
         .expect(200)
         .expect('Content-Type', 'text/html', done);
     });
+    it('Should respond with comments with api', (done) => {
+      const config = createConfig('create-session');
+      const handler = initializeApp(config);
+
+      request(handler)
+        .get('/api/comments')
+        .set('Cookie', 'sessionId=1')
+        .expect(200)
+        .expect('Content-Type', 'application/json', done);
+    });
 
     it('Should logout from the session', (done) => {
       const config = createConfig('create-session');
@@ -78,6 +88,7 @@ describe('Initialize App', () => {
           done(err);
         });
     });
+
 
   });
 
@@ -108,7 +119,6 @@ describe('Initialize App', () => {
   });
 
 });
-
 
 describe('App test', () => {
   const handler = app('./public');
