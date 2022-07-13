@@ -6,34 +6,32 @@ const { initializeApp } = require('../src/app.js');
 const { Comments } = require('../src/handlers/comments.js');
 const { Sessions } = require('../src/handlers/sessions.js');
 
-const createConfig = (session) => {
-  const serveFiles = {
+const createSetup = () => {
+  const config = {
     dirPath: './public', aliases: { '/': '/flowerCatalog.html' }
   };
   const identity = () => { };
-  const guestbook = new Comments('', identity, identity);
+  const guestBook = new Comments('', identity, identity);
   const sessions = new Sessions();
-
-  if (session === 'create-session') {
-    const userSession = { sessionId: 1, username: 'pen' };
-    sessions.add(userSession);
-  }
-  return { sessions, serveFiles, guestbook };
+  return { sessions, config, guestBook };
 }
 
 describe('Initialize App', () => {
+  let setup, handler;
+
+  beforeEach(() => {
+    setup = createSetup();
+    handler = initializeApp(setup);
+  })
 
   it('Should create a session when user is not present', (done) => {
-    const config = createConfig();
-    const handler = initializeApp(config);
-
     request(handler)
       .post('/login')
       .send('username=pen')
       .expect(302)
       .expect('Location', '/comments')
       .end((err) => {
-        const newSession = config.sessions.getInfo();
+        const newSession = setup.sessions.getInfo();
         const result = Object.entries(newSession).some(([, session]) => session.username === 'pen');
         assert.ok(result);
         done(err);
@@ -41,11 +39,13 @@ describe('Initialize App', () => {
   });
 
   describe('When session exists', () => {
+    beforeEach(() => {
+      setup = createSetup();
+      setup.sessions.add({ username: 'pen', sessionId: 1 })
+      handler = initializeApp(setup);
+    })
 
     it('Should post the comment', (done) => {
-      const config = createConfig('create-session');
-      const handler = initializeApp(config);
-
       request(handler)
         .post('/comments')
         .set('Cookie', 'sessionId=1')
@@ -54,8 +54,6 @@ describe('Initialize App', () => {
     });
 
     it('Should display comments page with exisiting comments', (done) => {
-      const config = createConfig('create-session');
-      const handler = initializeApp(config);
       request(handler)
         .get('/comments')
         .set('Cookie', 'sessionId=1')
@@ -64,9 +62,6 @@ describe('Initialize App', () => {
     });
 
     it('Should respond with comments with api', (done) => {
-      const config = createConfig('create-session');
-      const handler = initializeApp(config);
-
       request(handler)
         .get('/api/comments')
         .set('Cookie', 'sessionId=1')
@@ -75,16 +70,13 @@ describe('Initialize App', () => {
     });
 
     it('Should logout from the session', (done) => {
-      const config = createConfig('create-session');
-      const handler = initializeApp(config);
-
       request(handler)
         .get('/logout')
         .set('Cookie', 'sessionId=1')
         .expect(302)
         .expect('Location', '/flowerCatalog.html')
         .end((err) => {
-          const newSession = config.sessions.getInfo();
+          const newSession = setup.sessions.getInfo();
           const result = Object.entries(newSession).some(([, session]) => session.username === 'pen');
           assert.ok(!result);
           done(err);
@@ -94,25 +86,23 @@ describe('Initialize App', () => {
   });
 
   describe('When session does not exist', () => {
-    it('Should not post the comment when user session is not present', (done) => {
-      const config = createConfig();
-      const handler = initializeApp(config);
-
+    it('Should not post the comment when cookie is not present', (done) => {
       request(handler)
         .post('/comments')
-        .set('Cookie', 'sessionId=1')
         .send('username=pen')
         .expect(302)
         .expect('Location', '/login', done);
     });
 
-    it('Should not post the comment when cookie is not present', (done) => {
-      const config = createConfig('create-session');
+    beforeEach(() => {
+      setup = createSetup();
+      handler = initializeApp(setup);
+    })
 
-      const handler = initializeApp(config);
-
+    it('Should not post the comment when user session is not present', (done) => {
       request(handler)
         .post('/comments')
+        .set('Cookie', 'sessionId=1')
         .send('username=pen')
         .expect(302)
         .expect('Location', '/login', done);

@@ -26,7 +26,6 @@ const guestBookPageHandler = (request, response) => {
 };
 
 const postGuestBook = (request, response) => {
-
   const { guestBook } = request;
   const entry = createEntry(request, request.timeStamp.toLocaleString());
 
@@ -34,11 +33,9 @@ const postGuestBook = (request, response) => {
     guestBook.add(entry);
     guestBook.save();
   }
-
   response.statusCode = 201;
   response.end('submitted');
   return true;
-
 };
 
 const guestBook = (request, response) => {
@@ -47,21 +44,25 @@ const guestBook = (request, response) => {
   return true;
 };
 
+const redirectTologin = (request, response, next) => {
+  response.statusCode = 302;
+  response.setHeader('Location', '/login');
+  response.end();
+  return;
+};
 
 const guestBookHandler = (comments) => (request, response, next) => {
 
   const session = request.sessions.isPresent(request.cookies.sessionId);
   if (!session && request.url.pathname === '/comments') {
-    response.statusCode = 302;
-    response.setHeader('Location', '/login');
-    response.end();
-    return;
+    return redirectTologin(request, response, next);
   }
 
   if (request.matches('GET', '/api/comments')) {
     request.guestBook = comments;
     return guestBook(request, response);
   }
+
   if (request.matches('GET', '/comments')) {
     request.guestBook = comments;
     return guestBookPageHandler(request, response);

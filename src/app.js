@@ -28,11 +28,11 @@ const initializeGuestBook = (file) => {
   return guestbook;
 };
 
-const initializeApp = (config) => {
-  const { sessions, guestbook, serveFiles } = config;
-  const { aliases, dirPath = './public' } = serveFiles;
+const initializeApp = (setup) => {
+  const { config, sessions, guestBook } = setup;
+  const { aliases, dirPath = './public' } = config;
 
-  const handleGuestBook = guestBookHandler(guestbook);
+  const handleGuestBook = guestBookHandler(guestBook);
   const staticFileServer = serveStaticFile(dirPath, aliases);
 
   const handlers = [
@@ -50,14 +50,14 @@ const initializeApp = (config) => {
 };
 
 const app = (dirPath) => {
-  const serveFiles = {
+  const config = {
     dirPath, aliases: { '/': '/flowerCatalog.html' }
   };
 
   const sessions = new Sessions();
-  const guestbook = initializeGuestBook('resources/comments.json');
+  const guestBook = initializeGuestBook('resources/comments.json');
 
-  return initializeApp({ sessions, guestbook, serveFiles });
+  return initializeApp({ config, sessions, guestBook });
 };
 
 module.exports = { app, initializeApp };

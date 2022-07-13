@@ -10,8 +10,8 @@ describe('App test', () => {
       .expect(404, done);
   });
 
-  describe('Should serve the static pages', () => {
-    it('GET /', (done) => {
+  describe('GET request of files on public directory ', () => {
+    it('Should serve index page( "/" )', (done) => {
       request(handler)
         .get('/flowerCatalog.html')
         .expect('Content-type', 'text/html')
@@ -19,7 +19,7 @@ describe('App test', () => {
         .end(done);
     });
 
-    it('GET /flowerCatalog.html', (done) => {
+    it('Should serve html page( "/flowerCatalog.html" )', (done) => {
       request(handler)
         .get('/flowerCatalog.html')
         .expect('Content-type', 'text/html')
@@ -27,7 +27,7 @@ describe('App test', () => {
         .end(done);
     });
 
-    it('GET /docs/Abeliophyllum.pdf', (done) => {
+    it('Should serve document from docs ( "/docs/Abeliophyllum.pdf" )', (done) => {
       request(handler)
         .get('/docs/Abeliophyllum.pdf')
         .expect('Content-type', 'application/pdf')
@@ -35,7 +35,7 @@ describe('App test', () => {
         .end(done);
     });
 
-    it('GET /images/freshorigins.jpeg', (done) => {
+    it('Should serve image from images ( "/images/freshorigins.jpeg" )', (done) => {
       request(handler)
         .get('/images/freshorigins.jpeg')
         .expect('Content-type', 'image/jpeg')
