@@ -36,10 +36,9 @@
   };
 
   const getGuestBook = () => {
-    const options = {
+    let options = {
       method: 'GET',
       url: '/api/comments',
-      statusCodes: 200,
       onLoad: createTable,
     };
 
@@ -53,7 +52,6 @@
     const options = {
       method: 'POST',
       url: '/comments',
-      statusCodes: 201,
       onLoad: getGuestBook,
       body: body
     };

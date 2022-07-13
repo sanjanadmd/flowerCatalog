@@ -21,13 +21,16 @@ const updateGuestBook = (path, comments) => {
 const guestBookPageHandler = (request, response) => {
   const comments = fs.readFileSync('src/templates/addComment.html', 'utf8');
 
-  const content = comments.replaceAll('__COMMENT__', request.guestBook.toTable('reverse'));
+  const content = comments.replaceAll('__COMMENT__', request.guestBook.toTable());
   const page = modifyHtml('Guest Book', content);
+
+  response.setHeader('Content-Type', 'text/html');
   response.end(page);
   return true;
 };
 
 const postGuestBook = (request, response) => {
+
   const { guestBook } = request;
   const entry = createEntry(request, request.timeStamp.toLocaleString());
 
@@ -48,7 +51,16 @@ const guestBook = (request, response) => {
   return true;
 };
 
+
 const guestBookHandler = (comments) => (request, response, next) => {
+
+  const session = request.sessions.isPresent(request.cookies.sessionId);
+  if (!session && request.url.pathname === '/comments') {
+    response.statusCode = 302;
+    response.setHeader('Location', '/login');
+    response.end();
+    return;
+  }
 
   if (request.matches('GET', '/api/comments')) {
     request.guestBook = comments;

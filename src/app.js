@@ -21,18 +21,20 @@ const initializeGuestBook = (file) => {
   return guestbook;
 };
 
-const initializeApp = (dependencies) => {
-  const { sessions, guestbook, serveFiles } = dependencies;
-
+const initializeApp = (config) => {
+  const { sessions, guestbook, serveFiles } = config;
   const { aliases, dirPath = './public' } = serveFiles;
+
+  const handleGuestBook = guestBookHandler(guestbook);
+  const staticFileServer = serveStaticFile(dirPath, aliases);
 
   const handlers = [
     bodyParser,
     injectCookie,
     loginHandler,
     logoutHandler,
-    guestBookHandler(guestbook),
-    serveStaticFile(dirPath, aliases),
+    handleGuestBook,
+    staticFileServer,
     notFoundHandler,
     methodNotAllowed
   ];
@@ -42,10 +44,7 @@ const initializeApp = (dependencies) => {
 
 const app = (dirPath) => {
   const serveFiles = {
-    dirPath,
-    aliases: {
-      '/': '/flowerCatalog.html'
-    }
+    dirPath, aliases: { '/': '/flowerCatalog.html' }
   };
 
   const sessions = new Sessions();

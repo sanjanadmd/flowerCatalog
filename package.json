@@ -4,7 +4,7 @@
   "description": "",
   "main": "startServer.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha -w",
     "start": "node startServer.js ./public"
   },
   "repository": {
