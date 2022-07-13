@@ -15,10 +15,11 @@ const injectUsers = (users) => (request, response, next) => {
 }
 
 const injectCookie = (request, response, next) => {
+  let cookies = {};
   if (request.headers.cookie) {
-    const cookies = parseCookies(request.headers.cookie);
-    request.cookies = cookies;
+    cookies = parseCookies(request.headers.cookie);
   }
+  request.cookies = cookies;
   next();
 };
 
@@ -48,17 +49,19 @@ const loginHandler = (request, response, next) => {
     next();
     return;
   }
+  let location = '/loginPage.html';
+
+  const session = request.sessions.isPresent(request.cookies.sessionId);
+  if (session) {
+    location = '/comments';
+  }
 
   const username = request.bodyParams.get('username');
-  if (username) {
+  if (username && !session) {
     const session = createSession(request, response, next);
     request.session = session;
     request.sessions.add(session);
     response.setHeader('set-cookie', `sessionId=${session.sessionId}`);
-  }
-
-  let location = '/loginPage.html';
-  if (request.session) {
     location = '/comments';
   }
 

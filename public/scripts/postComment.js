@@ -50,7 +50,6 @@
     const form = document.querySelector('#form');
     const formData = new FormData(form);
     const body = new URLSearchParams(formData).toString();
-
     const options = {
       method: 'POST',
       url: '/comments',

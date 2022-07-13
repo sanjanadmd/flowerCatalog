@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const modifyHtml = (title, content) => {
-  return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"><script src="postComment.js"></script></head><body>${content}</body></html>`
+  return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"><script src="scripts/postComment.js"></script></head><body>${content}</body></html>`
 };
 
 const createEntry = (request, timeStamp) => {
