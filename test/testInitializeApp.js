@@ -10,7 +10,8 @@ const createConfig = (session) => {
   const serveFiles = {
     dirPath: './public', aliases: { '/': '/flowerCatalog.html' }
   };
-  const guestbook = new Comments();
+  const identity = () => { };
+  const guestbook = new Comments('', identity, identity);
   const sessions = new Sessions();
 
   if (session === 'create-session') {

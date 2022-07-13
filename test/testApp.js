@@ -34,6 +34,7 @@ describe('App test', () => {
         .expect(200)
         .end(done);
     });
+
     it('GET /images/freshorigins.jpeg', (done) => {
       request(handler)
         .get('/images/freshorigins.jpeg')
