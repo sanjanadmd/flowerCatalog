@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const { createHandler, bodyParser, serveStaticFile, notFoundHandler } = require('myserver');
 
-const { injectUsers, injectCookie, injectSession, loginHandler, logoutHandler } = require('./handlers/cookies.js');
+const { injectCookie, loginHandler, logoutHandler } = require('./handlers/cookies.js');
 
 const { methodNotAllowed } = require('./handlers/methodNotAllowed.js');
 const { guestBookHandler } = require('./handlers/guestbook.js');
@@ -14,34 +14,44 @@ const matches = function (method, path) {
   return method === this.method && path === this.url.pathname;
 };
 
-const createGuestBook = (file) => {
+const initializeGuestBook = (file) => {
   const guestbook = new Comments(file);
   const records = JSON.parse(fs.readFileSync(file, 'utf8'));
   guestbook.priorComments = records;
   return guestbook;
 };
 
-const initializeApp = () => {
-  const users = {
-    abc: { username: 'abc' },
-    def: { username: 'def' }
-  };
+const initializeApp = (dependencies) => {
+  const { sessions, guestbook, serveFiles } = dependencies;
+
+  const { aliases, dirPath = './public' } = serveFiles;
 
   const handlers = [
     bodyParser,
-    injectUsers(users),
     injectCookie,
     loginHandler,
     logoutHandler,
-    guestBookHandler(createGuestBook('resources/comments.json')),
-    serveStaticFile('./public'),
+    guestBookHandler(guestbook),
+    serveStaticFile(dirPath, aliases),
     notFoundHandler,
     methodNotAllowed
   ];
-  const sessions = new Sessions();
+
   return createHandler({ handlers, matches, sessions });
 };
 
-const handler = initializeApp();
+const app = (dirPath) => {
+  const serveFiles = {
+    dirPath,
+    aliases: {
+      '/': '/flowerCatalog.html'
+    }
+  };
 
-module.exports = { handler };
+  const sessions = new Sessions();
+  const guestbook = initializeGuestBook('resources/comments.json');
+
+  return initializeApp({ sessions, guestbook, serveFiles });
+};
+
+module.exports = { app, initializeApp };
