@@ -12,7 +12,7 @@
   const createRow = (row) => {
     const tr = document.createElement('tr');
 
-    const tableData = Object.entries(row).map(([field, value]) => {
+    const tableData = Object.values(row).map(value => {
       const td = document.createElement('td');
       td.innerText = value;
       return td;
@@ -41,7 +41,8 @@
       url: '/api/comments',
       statusCodes: 200,
       onLoad: createTable,
-    }
+    };
+
     createXhr(options);
   };
 
@@ -51,15 +52,14 @@
     const body = new URLSearchParams(formData).toString();
 
     const options = {
-      method: 'Post',
+      method: 'POST',
       url: '/comments',
       statusCodes: 201,
       onLoad: getGuestBook,
       body: body
-    }
+    };
 
     createXhr(options);
-
   };
 
   const main = () => {

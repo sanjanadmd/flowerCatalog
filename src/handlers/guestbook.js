@@ -35,6 +35,8 @@ const postGuestBook = (request, response) => {
     guestBook.add(entry);
     updateGuestBook(guestBook.reference, guestBook.comments);
   }
+
+  response.statusCode = 201;
   response.end('submitted');
   return true;
 

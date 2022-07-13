@@ -18,5 +18,9 @@
   "homepage": "https://github.com/sanjanadmd/flowerCatalog#readme",
   "dependencies": {
     "myserver": "github:sanjanadmd/myServer"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "supertest": "^6.2.4"
   }
 }
