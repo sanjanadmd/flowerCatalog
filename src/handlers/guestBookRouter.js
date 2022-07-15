@@ -1,7 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 
-const { getGuestBook, postGuestBook, apiHandler, checkAccess } = require('./guestbook.js');
+const { getGuestBook, postGuestBook, apiHandler } = require('./guestbook.js');
+const { verifyAccess } = require('./cookies.js');
 
 const { Comments } = require('./comments.js');
 
@@ -26,16 +27,14 @@ const addSetup = (setup) => (req, res, next) => {
   next();
 };
 
-
 const guestBookHandler = (setup) => {
   const app = express.Router();
-  app.use(addSetup(setup), checkAccess);
+  app.use(addSetup(setup), verifyAccess);
   app.get('/comments', getGuestBook);
   app.post('/comments', postGuestBook);
   app.get('/api/comments', apiHandler);
   return app;
 };
-
 
 const guestBookRouter = () => {
   const guestBook = initializeGuestBook('resources/comments.json');

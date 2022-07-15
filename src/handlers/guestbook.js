@@ -42,22 +42,4 @@ const apiHandler = (request, response) => {
   response.end(request.guestBook.comments);
   return true;
 };
-
-const sessionExistance = (cookies, sessions) => {
-  if (cookies) {
-    return sessions.isPresent(cookies.sessionId);
-  }
-  return false;
-};
-
-
-const checkAccess = (request, response, next) => {
-  const session = sessionExistance(request.cookies, request.sessions);
-  if (!session) {
-    response.redirect('/login');
-    response.end();
-    return;
-  }
-  next();
-};
-module.exports = { getGuestBook, postGuestBook, apiHandler, checkAccess };
+module.exports = { getGuestBook, postGuestBook, apiHandler };

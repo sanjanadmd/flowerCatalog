@@ -1,7 +1,7 @@
 const express = require('express');
-const fs = require('fs');
 
-const { injectCookie, loginHandler, logoutHandler } = require('./handlers/cookies.js');
+const { injectCookie } = require('./handlers/cookies.js');
+const { loginHandler, logoutHandler } = require('./handlers/authentication.js');
 
 const { guestBookRouter } = require('./handlers/guestBookRouter.js');
 const { Sessions } = require('./handlers/sessions.js');
