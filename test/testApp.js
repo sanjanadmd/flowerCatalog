@@ -3,7 +3,7 @@ const request = require('supertest');
 const { app } = require('../src/app.js');
 
 describe('App test', () => {
-  const handler = app('./public');
+  const handler = app();
   it('Should respond with 404 when url not found', (done) => {
     request(handler)
       .get('/notFound')
@@ -14,7 +14,7 @@ describe('App test', () => {
     it('Should serve index page( "/" )', (done) => {
       request(handler)
         .get('/flowerCatalog.html')
-        .expect('Content-type', 'text/html')
+        .expect('Content-type', 'text/html; charset=UTF-8')
         .expect(200)
         .end(done);
     });
@@ -22,7 +22,7 @@ describe('App test', () => {
     it('Should serve html page( "/flowerCatalog.html" )', (done) => {
       request(handler)
         .get('/flowerCatalog.html')
-        .expect('Content-type', 'text/html')
+        .expect('Content-type', 'text/html; charset=UTF-8')
         .expect(200)
         .end(done);
     });

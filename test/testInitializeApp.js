@@ -1,27 +1,24 @@
 const request = require('supertest');
 const assert = require('assert');
 
-const { initializeApp } = require('../src/app.js');
+const { createApp } = require('../src/app.js');
 
 const { Comments } = require('../src/handlers/comments.js');
 const { Sessions } = require('../src/handlers/sessions.js');
 
 const createSetup = () => {
-  const config = {
-    dirPath: './public', aliases: { '/': '/flowerCatalog.html' }
-  };
   const identity = () => { };
   const guestBook = new Comments('', identity, identity);
   const sessions = new Sessions();
-  return { sessions, config, guestBook };
-}
+  return { sessions, guestBook };
+};
 
 describe('Initialize App', () => {
   let setup, handler;
 
   beforeEach(() => {
     setup = createSetup();
-    handler = initializeApp(setup);
+    handler = createApp(setup);
   })
 
   it('Should create a session when user is not present', (done) => {
@@ -42,8 +39,8 @@ describe('Initialize App', () => {
     beforeEach(() => {
       setup = createSetup();
       setup.sessions.add({ username: 'pen', sessionId: 1 })
-      handler = initializeApp(setup);
-    })
+      handler = createApp(setup);
+    });
 
     it('Should post the comment', (done) => {
       request(handler)
@@ -58,7 +55,7 @@ describe('Initialize App', () => {
         .get('/comments')
         .set('Cookie', 'sessionId=1')
         .expect(200)
-        .expect('Content-Type', 'text/html', done);
+        .expect('Content-Type', 'text/html; charset=utf-8', done);
     });
 
     it('Should respond with comments with api', (done) => {
@@ -66,7 +63,7 @@ describe('Initialize App', () => {
         .get('/api/comments')
         .set('Cookie', 'sessionId=1')
         .expect(200)
-        .expect('Content-Type', 'application/json', done);
+        .expect('Content-Type', 'application/json; charset=utf-8', done);
     });
 
     it('Should logout from the session', (done) => {
@@ -86,6 +83,7 @@ describe('Initialize App', () => {
   });
 
   describe('When session does not exist', () => {
+
     it('Should not post the comment when cookie is not present', (done) => {
       request(handler)
         .post('/comments')
@@ -96,8 +94,8 @@ describe('Initialize App', () => {
 
     beforeEach(() => {
       setup = createSetup();
-      handler = initializeApp(setup);
-    })
+      handler = createApp(setup);
+    });
 
     it('Should not post the comment when user session is not present', (done) => {
       request(handler)

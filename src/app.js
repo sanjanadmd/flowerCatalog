@@ -1,11 +1,9 @@
+const express = require('express');
 const fs = require('fs');
-
-const { createHandler, bodyParser, serveStaticFile, notFoundHandler } = require('myserver');
 
 const { injectCookie, loginHandler, logoutHandler } = require('./handlers/cookies.js');
 
-const { methodNotAllowed } = require('./handlers/methodNotAllowed.js');
-const { guestBookHandler } = require('./handlers/guestbook.js');
+const { getGuestBook, postGuestBook, apiHandler } = require('./handlers/guestbook.js');
 
 const { Comments } = require('./handlers/comments.js');
 const { Sessions } = require('./handlers/sessions.js');
@@ -22,42 +20,55 @@ const write = (path, comments) => {
   fs.writeFileSync(path, comments, 'utf8');
 };
 
-const initializeGuestBook = (file) => {
-  const guestbook = new Comments(file, read, write);
+const initializeGuestBook = (guestBookPath) => {
+  const guestbook = new Comments(guestBookPath, read, write);
   guestbook.initialize();
   return guestbook;
 };
 
-const initializeApp = (setup) => {
-  const { config, sessions, guestBook } = setup;
-  const { aliases, dirPath = './public' } = config;
-
-  const handleGuestBook = guestBookHandler(guestBook);
-  const staticFileServer = serveStaticFile(dirPath, aliases);
-
-  const handlers = [
-    bodyParser,
-    injectCookie,
-    loginHandler,
-    logoutHandler,
-    handleGuestBook,
-    staticFileServer,
-    notFoundHandler,
-    methodNotAllowed
-  ];
-
-  return createHandler({ handlers, matches, sessions });
+const injectMatches = (req, res, next) => {
+  req.matches = matches;
+  next();
 };
 
-const app = (dirPath) => {
-  const config = {
-    dirPath, aliases: { '/': '/flowerCatalog.html' }
-  };
+const injectTime = (req, res, next) => {
+  req.timeStamp = new Date();
+  next();
+};
 
+const addSetup = (setup) => (req, res, next) => {
+  Object.entries(setup).map(([key, value]) => {
+    req[key] = value;
+  });
+  next();
+};
+
+const createApp = (setup) => {
+  const appInitialize = express();
+
+  appInitialize.use(addSetup(setup));
+  appInitialize.use(injectTime, injectMatches);
+
+  appInitialize.use(express.text());
+  appInitialize.use(express.urlencoded({ extended: true }));
+  appInitialize.use(express.static('public'));
+  appInitialize.use(injectCookie);
+  appInitialize.get('/login', loginHandler);
+  appInitialize.post('/login', loginHandler);
+  appInitialize.get('/logout', logoutHandler);
+
+  appInitialize.get('/comments', getGuestBook);
+  appInitialize.post('/comments', postGuestBook);
+  appInitialize.get('/api/comments', apiHandler);
+
+  return appInitialize;
+};
+
+const app = () => {
   const sessions = new Sessions();
   const guestBook = initializeGuestBook('resources/comments.json');
 
-  return initializeApp({ config, sessions, guestBook });
+  return createApp({ sessions, guestBook });
 };
 
-module.exports = { app, initializeApp };
+module.exports = { app, createApp };

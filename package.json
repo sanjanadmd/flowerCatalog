@@ -1,27 +1,28 @@
 {
-  "name": "flower-catalog",
+  "name": "flowercatalog",
   "version": "1.0.0",
   "description": "",
   "main": "startServer.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "mocha -w",
-    "start": "node startServer.js ./public"
+    "test": "mocha",
+    "start": "node startServer.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanjanadmd/flowerCatalog.git"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/sanjanadmd/flowerCatalog/issues"
   },
   "homepage": "https://github.com/sanjanadmd/flowerCatalog#readme",
-  "dependencies": {
-    "myserver": "github:sanjanadmd/myServer"
-  },
   "devDependencies": {
-    "mocha": "^10.0.0",
+    "express": "^4.18.1",
     "supertest": "^6.2.4"
   }
 }

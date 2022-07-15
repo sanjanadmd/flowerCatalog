@@ -5,27 +5,39 @@ const modifyHtml = (title, content) => {
 };
 
 const createEntry = (request, timeStamp) => {
-  const { bodyParams } = request;
+  const { body } = request;
   const { sessionId } = request.cookies;
   const entry = {};
   entry.dateTime = timeStamp;
   entry.name = request.sessions.getSession(sessionId).username;
-  entry.comment = bodyParams.get('comment');
+  entry.comment = body.comment;
   return entry;
 };
 
-const guestBookPageHandler = (request, response) => {
+const getGuestBook = (request, response) => {
+  const session = sessionExistance(request.cookies, request.sessions);
+  if (!session) {
+    response.redirect('/login');
+    return;
+  }
+
   const comments = fs.readFileSync('src/templates/addComment.html', 'utf8');
 
   const content = comments.replaceAll('__COMMENT__', request.guestBook.toTable());
   const page = modifyHtml('Guest Book', content);
 
-  response.setHeader('Content-Type', 'text/html');
+  response.set('Content-Type', 'text/html');
   response.end(page);
   return true;
 };
 
 const postGuestBook = (request, response) => {
+  const session = sessionExistance(request.cookies, request.sessions);
+  if (!session) {
+    response.redirect('/login');
+    response.end();
+    return;
+  }
   const { guestBook } = request;
   const entry = createEntry(request, request.timeStamp.toLocaleString());
 
@@ -33,46 +45,24 @@ const postGuestBook = (request, response) => {
     guestBook.add(entry);
     guestBook.save();
   }
-  response.statusCode = 201;
+
+  response.status(201);
   response.end('submitted');
   return true;
 };
 
-const guestBook = (request, response) => {
-  response.setHeader('Content-Type', 'application/json');
+const apiHandler = (request, response) => {
+  response.set('Content-Type', 'application/json');
   response.end(request.guestBook.comments);
   return true;
 };
 
-const redirectTologin = (request, response, next) => {
-  response.statusCode = 302;
-  response.setHeader('Location', '/login');
-  response.end();
-  return;
+const sessionExistance = (cookies, sessions) => {
+  if (cookies) {
+    return sessions.isPresent(cookies.sessionId);
+  }
+  return false;
 };
 
-const guestBookHandler = (comments) => (request, response, next) => {
 
-  const session = request.sessions.isPresent(request.cookies.sessionId);
-  if (!session && request.url.pathname === '/comments') {
-    return redirectTologin(request, response, next);
-  }
-
-  if (request.matches('GET', '/api/comments')) {
-    request.guestBook = comments;
-    return guestBook(request, response);
-  }
-
-  if (request.matches('GET', '/comments')) {
-    request.guestBook = comments;
-    return guestBookPageHandler(request, response);
-  }
-
-  if (request.matches('POST', '/comments')) {
-    request.guestBook = comments;
-    return postGuestBook(request, response);
-  }
-  next();
-};
-
-module.exports = { guestBookHandler };
+module.exports = { getGuestBook, postGuestBook, apiHandler };

@@ -24,49 +24,56 @@ const injectCookie = (request, response, next) => {
 };
 
 const createSession = (request, response, next) => {
-  const username = request.bodyParams.get('username');
+  const username = request.body.username;
   const date = new Date();
   const sessionId = date.getTime();
   return { username, time: date.toLocaleString(), sessionId };
 };
 
 const logoutHandler = (request, response, next) => {
-  if (request.url.pathname !== '/logout') {
+  if (request.url !== '/logout') {
     next();
     return;
   }
   const { sessionId } = request.cookies;
   request.sessions.remove(sessionId);
 
-  response.statusCode = 302;
-  response.setHeader('set-cookie', `sessionId=${sessionId};Max-Age=0`);
-  response.setHeader('Location', '/flowerCatalog.html');
+  response.status(302);
+  response.clearCookie(sessionId);
+  response.set('Location', '/flowerCatalog.html');
   response.end();
 };
 
+
+const sessionExistance = (cookies, sessions) => {
+  if (cookies) {
+    return sessions.isPresent(cookies.sessionId);
+  }
+  return false;
+};
+
 const loginHandler = (request, response, next) => {
-  if (request.url.pathname !== '/login') {
+  if (request.url !== '/login') {
     next();
     return;
   }
   let location = '/loginPage.html';
 
-  const session = request.sessions.isPresent(request.cookies.sessionId);
+  const session = sessionExistance(request.cookies, request.sessions);
   if (session) {
+    response.cookie('sessionId', request.cookies.sessionId);
     location = '/comments';
   }
 
-  const username = request.bodyParams.get('username');
+  const username = request.body?.username;
   if (username && !session) {
     const session = createSession(request, response, next);
     request.session = session;
     request.sessions.add(session);
-    response.setHeader('set-cookie', `sessionId=${session.sessionId}`);
+    response.cookie('sessionId', session.sessionId);
     location = '/comments';
   }
-
-  response.statusCode = 302;
-  response.setHeader('Location', location);
+  response.redirect(location);
   response.end();
 };
 

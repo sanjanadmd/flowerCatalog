@@ -25,6 +25,8 @@
   };
 
   const createTable = (xhr) => {
+    const textArea = document.querySelector('textarea');
+    textArea.value = '';
     const comments = JSON.parse(xhr.response);
     const table = document.querySelector('#comments');
     table.innerHTML = null;
@@ -48,12 +50,12 @@
   const postComment = () => {
     const form = document.querySelector('#form');
     const formData = new FormData(form);
-    const body = new URLSearchParams(formData).toString();
+    const body = new URLSearchParams(formData);
     const options = {
       method: 'POST',
       url: '/comments',
       onLoad: getGuestBook,
-      body: body
+      body,
     };
 
     createXhr(options);
