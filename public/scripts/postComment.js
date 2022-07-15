@@ -40,7 +40,7 @@
   const getGuestBook = () => {
     let options = {
       method: 'GET',
-      url: '/api/comments',
+      url: '/guest-book/api/comments',
       onLoad: createTable,
     };
 
@@ -53,7 +53,7 @@
     const body = new URLSearchParams(formData);
     const options = {
       method: 'POST',
-      url: '/comments',
+      url: '/guest-book/comments',
       onLoad: getGuestBook,
       body,
     };

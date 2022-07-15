@@ -9,11 +9,6 @@ const parseCookies = (cookieString) => {
   return cookies;
 };
 
-const injectUsers = (users) => (request, response, next) => {
-  request.users = users;
-  next();
-}
-
 const injectCookie = (request, response, next) => {
   let cookies = {};
   if (request.headers.cookie) {
@@ -30,11 +25,7 @@ const createSession = (request, response, next) => {
   return { username, time: date.toLocaleString(), sessionId };
 };
 
-const logoutHandler = (request, response, next) => {
-  if (request.url !== '/logout') {
-    next();
-    return;
-  }
+const logoutHandler = (request, response) => {
   const { sessionId } = request.cookies;
   request.sessions.remove(sessionId);
 
@@ -53,16 +44,12 @@ const sessionExistance = (cookies, sessions) => {
 };
 
 const loginHandler = (request, response, next) => {
-  if (request.url !== '/login') {
-    next();
-    return;
-  }
   let location = '/loginPage.html';
 
   const session = sessionExistance(request.cookies, request.sessions);
   if (session) {
     response.cookie('sessionId', request.cookies.sessionId);
-    location = '/comments';
+    location = '/guest-book/comments';
   }
 
   const username = request.body?.username;
@@ -71,11 +58,11 @@ const loginHandler = (request, response, next) => {
     request.session = session;
     request.sessions.add(session);
     response.cookie('sessionId', session.sessionId);
-    location = '/comments';
+    location = '/guest-book/comments';
   }
   response.redirect(location);
   response.end();
 };
 
 
-module.exports = { injectUsers, injectCookie, loginHandler, logoutHandler };
+module.exports = { injectCookie, loginHandler, logoutHandler };

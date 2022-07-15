@@ -1,8 +1,7 @@
-const fs = require('fs');
-
 const modifyHtml = (title, content) => {
-  return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"><script src="scripts/postComment.js"></script></head><body>${content}</body></html>`
+  return `<html><head><title>${title}</title><link rel="stylesheet" href="/styles.css"><script src="/scripts/postComment.js"></script></head><body>${content}</body></html>`
 };
+
 
 const createEntry = (request, timeStamp) => {
   const { body } = request;
@@ -15,15 +14,8 @@ const createEntry = (request, timeStamp) => {
 };
 
 const getGuestBook = (request, response) => {
-  const session = sessionExistance(request.cookies, request.sessions);
-  if (!session) {
-    response.redirect('/login');
-    return;
-  }
-
-  const comments = fs.readFileSync('src/templates/addComment.html', 'utf8');
-
-  const content = comments.replaceAll('__COMMENT__', request.guestBook.toTable());
+  const comments = request.addCommentForm;
+  const content = comments?.replaceAll('__COMMENT__', request.guestBook.toTable());
   const page = modifyHtml('Guest Book', content);
 
   response.set('Content-Type', 'text/html');
@@ -32,12 +24,6 @@ const getGuestBook = (request, response) => {
 };
 
 const postGuestBook = (request, response) => {
-  const session = sessionExistance(request.cookies, request.sessions);
-  if (!session) {
-    response.redirect('/login');
-    response.end();
-    return;
-  }
   const { guestBook } = request;
   const entry = createEntry(request, request.timeStamp.toLocaleString());
 
@@ -65,4 +51,13 @@ const sessionExistance = (cookies, sessions) => {
 };
 
 
-module.exports = { getGuestBook, postGuestBook, apiHandler };
+const checkAccess = (request, response, next) => {
+  const session = sessionExistance(request.cookies, request.sessions);
+  if (!session) {
+    response.redirect('/login');
+    response.end();
+    return;
+  }
+  next();
+};
+module.exports = { getGuestBook, postGuestBook, apiHandler, checkAccess };

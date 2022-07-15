@@ -26,7 +26,7 @@ describe('Initialize App', () => {
       .post('/login')
       .send('username=pen')
       .expect(302)
-      .expect('Location', '/comments')
+      .expect('Location', '/guest-book/comments')
       .end((err) => {
         const newSession = setup.sessions.getInfo();
         const result = Object.entries(newSession).some(([, session]) => session.username === 'pen');
@@ -44,7 +44,7 @@ describe('Initialize App', () => {
 
     it('Should post the comment', (done) => {
       request(handler)
-        .post('/comments')
+        .post('/guest-book/comments')
         .set('Cookie', 'sessionId=1')
         .expect(201)
         .expect('submitted', done);
@@ -52,7 +52,7 @@ describe('Initialize App', () => {
 
     it('Should display comments page with exisiting comments', (done) => {
       request(handler)
-        .get('/comments')
+        .get('/guest-book/comments')
         .set('Cookie', 'sessionId=1')
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8', done);
@@ -60,7 +60,7 @@ describe('Initialize App', () => {
 
     it('Should respond with comments with api', (done) => {
       request(handler)
-        .get('/api/comments')
+        .get('/guest-book/api/comments')
         .set('Cookie', 'sessionId=1')
         .expect(200)
         .expect('Content-Type', 'application/json; charset=utf-8', done);
@@ -86,7 +86,7 @@ describe('Initialize App', () => {
 
     it('Should not post the comment when cookie is not present', (done) => {
       request(handler)
-        .post('/comments')
+        .post('/guest-book/comments')
         .send('username=pen')
         .expect(302)
         .expect('Location', '/login', done);
@@ -99,7 +99,7 @@ describe('Initialize App', () => {
 
     it('Should not post the comment when user session is not present', (done) => {
       request(handler)
-        .post('/comments')
+        .post('/guest-book/comments')
         .set('Cookie', 'sessionId=1')
         .send('username=pen')
         .expect(302)

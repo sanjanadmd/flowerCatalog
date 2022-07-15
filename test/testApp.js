@@ -49,7 +49,7 @@ describe('App test', () => {
       .post('/login')
       .send('username=pen')
       .expect(302)
-      .expect('location', '/comments', done);
+      .expect('location', '/guest-book/comments', done);
   });
 
   it('Should redirect to login page when username is not provided', (done) => {
